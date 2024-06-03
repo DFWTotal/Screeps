@@ -27,13 +27,15 @@ var roleBuilder = {
             creep.memory.sourceId = leastCrowdedSource.id;
         }
 
-        // Perform harvesting or building tasks
-        if (creep.store[RESOURCE_ENERGY] == 0) {
-            let source = Game.getObjectById(creep.memory.sourceId);
-            if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}});
-            }
-        } else {
+        // State machine logic to handle harvesting and building
+        if (creep.memory.working && creep.store[RESOURCE_ENERGY] == 0) {
+            creep.memory.working = false;
+        }
+        if (!creep.memory.working && creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
+            creep.memory.working = true;
+        }
+
+        if (creep.memory.working) {
             let target = Game.getObjectById(creep.memory.targetConstructionSiteId);
             if (!target) {
                 // Assign a common construction site if not already assigned
@@ -46,8 +48,19 @@ var roleBuilder = {
 
             if (target) {
                 if (creep.build(target) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
+                    creep.moveTo(target);
                 }
+            } else {
+                // Move to the spawn or storage to wait for construction sites
+                let spawn = creep.room.find(FIND_MY_SPAWNS)[0];
+                if (spawn) {
+                    creep.moveTo(spawn);
+                }
+            }
+        } else {
+            let source = Game.getObjectById(creep.memory.sourceId);
+            if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(source);
             }
         }
     }

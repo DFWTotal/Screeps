@@ -19,6 +19,9 @@ module.exports.loop = function () {
         }
     }
 
+    var harvesterCount = _.filter(Game.creeps, (creeps) => creeps.memory.role == 'harvester');
+    //console.log(harvesterCount);
+
     for(var name in Game.creeps) {
         var creep = Game.creeps[name];
         if(creep.memory.role == 'harvester') {

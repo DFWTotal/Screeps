@@ -15,7 +15,7 @@ var roleBuilder = {
         if(creep.memory.working) {
             let conTargets = creep.room.find(FIND_CONSTRUCTION_SITES);
             let repTargets = creep.room.find(FIND_STRUCTURES, {
-                filter: object => object.hits < object.hitsMax
+                filter: object => object.hits < 10000
             });
             if(conTargets.length) {
                 if(creep.build(conTargets[0]) == ERR_NOT_IN_RANGE) {

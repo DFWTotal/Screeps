@@ -3,5 +3,40 @@
 		{
 			"path": "."
 		}
-	]
+	],
+	"settings": {
+		"editor.tabSize": 2,
+		"editor.formatOnSave": true,
+		"files.eol": "\n",
+		"eslint.enable": true,
+		"eslint.options": {
+			"configFile": ".eslintrc.json"
+		}
+	},
+	"extensions": {
+		"recommendations": [
+			"dbaeumer.vscode-eslint",
+			"esbenp.prettier-vscode",
+			"pkief.material-icon-theme",
+			"visualstudioexptteam.vscodeintellicode",
+			"christian-kohler.path-intellisense",
+			"eg2.vscode-npm-script",
+			"streetsidesoftware.code-spell-checker"
+		]
+	},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "Deploy to Screeps",
+				"type": "shell",
+				"command": "npm run deploy",
+				"group": {
+					"kind": "build",
+					"isDefault": true
+				},
+				"problemMatcher": []
+			}
+		]
+	}
 }

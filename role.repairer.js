@@ -1,3 +1,5 @@
+let roleBuilder = require("role.builder");
+
 var roleRepairer = {
 
   /** @param {Creep} creep **/

@@ -3,11 +3,6 @@ var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
 var roleRepairer = require('role.repairer');
 
-var upgraderCounter = 0;
-var harvesterCounter = 0;
-var builderCounter = 0;
-var repairerCounter = 0;
-
 let basicCreep = [WORK, CARRY, MOVE];
 let twoWorkCreep = [WORK, WORK, CARRY, MOVE];
 
@@ -38,45 +33,56 @@ module.exports.loop = function () {
     var upgraderCount = _.filter(Game.creeps, (c) => c.memory.role == 'upgrader');
     var builderCount = _.filter(Game.creeps, (c) => c.memory.role == 'builder');
     var repairerCount = _.filter(Game.creeps, (c) => c.memory.role == 'repairer');
-    let spawnHavesterOK = harvesterCount.length <= 4;
+    let spawnHarvesterOK = harvesterCount.length <= 4;
     let spawnBuilderOK = builderCount.length <= 3;
     let spawnUpgraderOK = upgraderCount.length <= 3;
     let spawnRepairerOK = repairerCount.length <= 3;
 
-    if ( spawnHavesterOK ) {
-        var newName = 'h' + harvesterCounter;
+    if (spawnHarvesterOK) {
+        var newName = 'h' + Game.time;
         const spawnResult = Game.spawns['Spawn1'].spawnCreep(basicCreep, newName, {
-            memory: {role: 'harvester'}
+            memory: { role: 'harvester' }
         });
+
         if (spawnResult === OK) {
-            harvesterCounter++;
             console.log("Spawning new harvester: " + newName);
+        } else {
+            // Log the error code to understand why spawning failed
+            console.log("Failed to spawn new harvester: " + newName + " with error: " + spawnResult);
+
+            // Additional debugging information
+            if (spawnResult === ERR_NOT_ENOUGH_ENERGY) {
+                console.log("Not enough energy to spawn new harvester.");
+            } else if (spawnResult === ERR_BUSY) {
+                console.log("Spawn is currently busy.");
+            } else if (spawnResult === ERR_NAME_EXISTS) {
+                console.log("Creep name already exists: " + newName);
+            } else if (spawnResult === ERR_INVALID_ARGS) {
+                console.log("Invalid arguments provided for spawning.");
+            }
         }
     } else if (spawnBuilderOK) {
-        var newName = 'b' + builderCounter;
+        var newName = 'b' + Game.time;
         const spawnResult = Game.spawns['Spawn1'].spawnCreep(twoWorkCreep, newName, {
             memory: {role: 'builder'}
         });
         if ( spawnResult === OK ) {
-            builderCounter++;
             console.log("Spawning new builder: " + newName);
         }
     } else if (spawnUpgraderOK) {
-        var newName = 'u' + upgraderCounter;
+        var newName = 'u' + Game.time;
         const spawnResult = Game.spawns['Spawn1'].spawnCreep(basicCreep, newName, {
             memory: {role: 'upgrader'}
         });
         if (spawnResult === OK) {
-            upgraderCounter++;
             console.log("Spawning new upgrader: " + newName);
         }
     } else if (spawnRepairerOK) {
-        var newName = 'r' + repairerCounter;
+        var newName = 'r' + Game.time;
         const spawnResult = Game.spawns['Spawn1'].spawnCreep(basicCreep, newName, {
             memory: {role: 'repairer'}
         });
         if (spawnResult === OK) {
-            repairerCounter++;
             console.log("Spawning new repairer: " + newName);
         }
     }

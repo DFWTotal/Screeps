@@ -15,25 +15,37 @@ var roleRepairer = {
         creep.say('🚧 build');
       }
 
-      if(creep.memory.working) {
+      if (creep.memory.working) {
         let repairStructure = creep.pos.findClosestByPath(FIND_STRUCTURES, {
           // "s" refers to structure
-          filter: (s) => s.hits < s.hitsMax && s.structureType != STRUCTURE_WALL
+          filter: (s) => s.hits < 50000
         });
-        if(repairStructure != undefined){
-          if (creep.repair(repairStructure) == ERR_NOT_IN_RANGE) {
-            creep.moveTo(repairStructure);
-          }
-        } else {
-          roleBuilder.run(creep);
-        }
 
+        if (repairStructure != null) {
+            if (creep.repair(repairStructure) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(repairStructure, { visualizePathStyle: { stroke: '#ffffff' } });
+            }
+        } else {
+            roleBuilder.run(creep);
+        }
+    } else {
+      var container = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+          filter: (structure) => {
+              return (structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_STORAGE) &&
+                     structure.store.getUsedCapacity(RESOURCE_ENERGY) > 0;
+          }
+      });
+      if (container) {
+          if (creep.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+              creep.moveTo(container, {visualizePathStyle: {stroke: '#ffaa00'}});
+          }
       } else {
           var source = creep.pos.findClosestByPath(FIND_SOURCES);
-          if(creep.harvest(source) == ERR_NOT_IN_RANGE) {
+          if (source && creep.harvest(source) == ERR_NOT_IN_RANGE) {
               creep.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}});
           }
       }
+    }
   }
 };
 

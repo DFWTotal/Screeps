@@ -1,10 +1,12 @@
 var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
+var roleRepairer = require('role.repairer');
 
 var upgraderCounter = 0;
 var harvesterCounter = 0;
 var builderCounter = 0;
+var repairerCounter = 0;
 
 let basicCreep = [WORK, CARRY, MOVE];
 let twoWorkCreep = [WORK, WORK, CARRY, MOVE];
@@ -32,12 +34,14 @@ function hasFreeSpaceAround(spawn) {
 }
 
 module.exports.loop = function () {
-    var harvesterCount = _.filter(Game.creeps, (creeps) => creeps.memory.role == 'harvester');
-    var upgraderCount = _.filter(Game.creeps, (creeps) => creeps.memory.role == 'upgrader');
-    var builderCount = _.filter(Game.creeps, (creeps) => creeps.memory.role == 'builder');
+    var harvesterCount = _.filter(Game.creeps, (c) => c.memory.role == 'harvester');
+    var upgraderCount = _.filter(Game.creeps, (c) => c.memory.role == 'upgrader');
+    var builderCount = _.filter(Game.creeps, (c) => c.memory.role == 'builder');
+    var repairerCount = _.filter(Game.creeps, (c) => c.memory.role == 'repairer');
     let spawnHavesterOK = harvesterCount.length <= 4;
     let spawnBuilderOK = builderCount.length <= 3;
     let spawnUpgraderOK = upgraderCount.length <= 3;
+    let spawnRepairerOK = repairerCount.length <= 3;
 
     if ( spawnHavesterOK ) {
         var newName = 'h' + harvesterCounter;
@@ -66,18 +70,27 @@ module.exports.loop = function () {
             upgraderCounter++;
             console.log("Spawning new upgrader: " + newName);
         }
+    } else if (spawnRepairerOK) {
+        var newName = 'r' + repairerCounter;
+        const spawnResult = Game.spawns['Spawn1'].spawnCreep(basicCreep, newName, {
+            memory: {role: 'repairer'}
+        });
+        if (spawnResult === OK) {
+            repairerCounter++;
+            console.log("Spawning new repairer: " + newName);
+        }
     }
 
     for ( var name in Game.creeps ) {
         let creep = Game.creeps[name];
         if (creep.memory.role == 'harvester') {
             roleHarvester.run(creep);
-        }
-        if (creep.memory.role == 'upgrader') {
+        } else if (creep.memory.role == 'upgrader') {
             roleUpgrader.run(creep);
-        }
-        if (creep.memory.role == 'builder') {
+        } else if (creep.memory.role == 'builder') {
             roleBuilder.run(creep);
+        } else if (creep.memory.role == 'repairer') {
+            roleRepairer.run(creep);
         }
     }
 

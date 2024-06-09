@@ -107,3 +107,9 @@ module.exports.loop = function () {
         //console.log('There is free space around Spawn1.');
     }
 }
+
+/*
+Game.spawns['Spawn1'].spawnCreep([WORK, WORK, CARRY, MOVE], 'u1', {
+            memory: {role: 'repairer'}
+        });
+*/

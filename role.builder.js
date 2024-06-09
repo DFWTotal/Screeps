@@ -15,32 +15,25 @@ var roleBuilder = {
         if(creep.memory.working) {
             let conTargets = creep.room.find(FIND_CONSTRUCTION_SITES);
             let repTargets = creep.room.find(FIND_STRUCTURES, {
-                filter: object => object.hits < 10000
+                filter: object => object.hits < object.hitsMax && object.hits < 10000
             });
-            if(conTargets.length) {
+            if(conTargets.length > 0) {
                 if(creep.build(conTargets[0]) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(conTargets[0], {visualizePathStyle: {stroke: '#ffffff'}});
                 }
             } else if (repTargets.length > 0) {
                 if(creep.repair(repTargets[0]) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(repTargets[0]);
+                    creep.moveTo(repTargets[0], {visualizePathStyle: {stroke: '#ffaa00'}});
                 }
             }
         }
         else {
-            var sources = creep.room.find(FIND_SOURCES);
-            if(creep.harvest(sources[0]) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(sources[0], {visualizePathStyle: {stroke: '#ffaa00'}});
+            var source = creep.pos.findClosestByPath(FIND_SOURCES);
+            if(source && creep.harvest(source) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}});
             }
         }
     }
 };
 
 module.exports = roleBuilder;
-
-/*
-===== Spawn a creep =====
-Game.spawns['Spawn1'].spawnCreep([WORK, WORK, CARRY, MOVE], 'b1', {
-    memory: {role: 'builder'}
-});
-*/
